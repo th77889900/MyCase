@@ -7,6 +7,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Slf4j
 @UnThreadSafe
@@ -18,6 +20,8 @@ public class ConcurrencyExample1 {
 
     private static int count = 0;
 
+    private final static Lock lock = new ReentrantLock();
+
     public static void main(String[] args) throws InterruptedException {
         ExecutorService executorService = Executors.newCachedThreadPool();
 
@@ -27,7 +31,6 @@ public class ConcurrencyExample1 {
 
         for (int i = 0; i < clienttotal; i++) {
 
-
             executorService.execute(()->{
                 try {
                     semaphore.acquire();
@@ -36,8 +39,8 @@ public class ConcurrencyExample1 {
                 } catch (InterruptedException e) {
                     log.error("err: ", e);
                 }
+                countDownLatch.countDown();
             });
-            countDownLatch.countDown();
         }
 
         countDownLatch.await();
@@ -45,7 +48,13 @@ public class ConcurrencyExample1 {
         log.info("count: {}" + count);
     }
 
-    private static synchronized void add() {
-        count++;
+    private static void add() {
+        lock.lock();
+
+        try {
+            count++;
+        } finally {
+            lock.unlock();
+        }
     }
 }
