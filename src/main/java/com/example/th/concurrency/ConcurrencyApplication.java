@@ -9,6 +9,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
 import javax.servlet.Filter;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SpringBootApplication
 public class ConcurrencyApplication extends WebMvcConfigurationSupport {
